@@ -27,7 +27,7 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
-            const tagName = context.event.release.tag_name;
+            const tagName = github.event.release.tag_name;
             const version = tagName.slice(1); // remove the "v" prefix
             return version;
 
