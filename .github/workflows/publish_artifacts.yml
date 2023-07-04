@@ -1,4 +1,4 @@
-name: Java Build with Artifacts
+name: Upload Release Assets
 
 on:
   release:
@@ -45,6 +45,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_name: output.jar
           asset_path: ./output/*.jar
+          asset_name: output.jar
           asset_content_type: application/java-archive
