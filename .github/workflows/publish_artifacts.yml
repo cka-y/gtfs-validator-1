@@ -5,7 +5,7 @@ on:
     types: [ prereleased, released ]
 
 jobs:
-  shadowJar:
+  upload-release-assets:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,21 +20,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew shadowJar
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: output
-          path: cli/build/libs/gtfs-validator-*.jar
-
-  upload-release-asset:
-    needs: [ shadowJar ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: output
-
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -42,6 +27,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./output/gtfs-validator-*.jar
-          asset_name: output.jar
+          asset_path: ./cli/build/libs/gtfs-validator-*.jar
+          asset_name: gtfs-validator.jar
           asset_content_type: application/java-archive
