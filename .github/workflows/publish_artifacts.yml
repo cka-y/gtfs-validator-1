@@ -1,0 +1,49 @@
+name: Java Build with Artifacts
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  shadowJar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew shadowJar
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: output
+          path: build/libs/gtfs-validator-*.jar
+
+  upload-release-asset:
+    needs: [ shadowJar ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: output
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_name: ${{ steps.download.outputs.filename }}
+          asset_content_type: application/java-archive
