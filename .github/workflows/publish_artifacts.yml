@@ -31,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: output
-          path: build/libs/gtfs-validator-*.jar
+          path: cli/build/libs/gtfs-validator-*.jar
 
   upload-release-asset:
     needs: [ shadowJar ]
