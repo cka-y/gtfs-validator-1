@@ -2,7 +2,7 @@ name: Java Build with Artifacts
 
 on:
   release:
-    types: [ published ]
+    types: [ released ]
 #on:
 #  push:
 #    branches:
