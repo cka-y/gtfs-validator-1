@@ -20,7 +20,7 @@ jobs:
           java-version: '17'
           distribution: 'zulu'
 
-      - name: Create CLI jar
+      - name: Generate CLI jar
         run: ./gradlew shadowJar
 
       - name: Upload JAR Asset
@@ -42,6 +42,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./web/client/static
+          asset_path: ./web/client/static/rules.json
           asset_name: rules.json
           asset_content_type: application/json
