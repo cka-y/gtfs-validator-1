@@ -45,3 +45,17 @@ jobs:
           asset_path: ./web/client/static/rules.json
           asset_name: rules.json
           asset_content_type: application/json
+
+      - name: Zip docs
+        run: zip -r docs.zip docs
+
+      - name: Upload zipped docs
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./docs.zip
+          asset_name: docs.zip
+          asset_content_type: application/zip
+
