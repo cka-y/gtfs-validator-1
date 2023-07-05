@@ -46,16 +46,19 @@ jobs:
           asset_name: rules.json
           asset_content_type: application/json
 
-      - name: Zip docs
-        run: zip -r docs.zip docs
+      - name: Generate JavaDocs
+        run: ./gradlew aggregateJavadoc
 
-      - name: Upload zipped docs
+      - name: Zip docs
+        run: zip -r javadocs.zip build/docs/aggregateJavadoc
+
+      - name: Upload zipped Javadocs docs
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./docs.zip
-          asset_name: docs.zip
+          asset_path: ./javadocs.zip
+          asset_name: javadocs.zip
           asset_content_type: application/zip
 
