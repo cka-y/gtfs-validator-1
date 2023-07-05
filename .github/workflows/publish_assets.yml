@@ -49,10 +49,10 @@ jobs:
       - name: Generate JavaDocs
         run: ./gradlew aggregateJavadoc
 
-      - name: Zip docs
+      - name: Zip JavaDocs
         run: zip -r javadocs.zip build/docs/aggregateJavadoc
 
-      - name: Upload zipped Javadocs docs
+      - name: Upload zipped Javadocs
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
