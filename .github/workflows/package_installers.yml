@@ -62,7 +62,7 @@ jobs:
         with:
           arguments: |
             jpackage
-            -Psign-app=${{github.event_name == 'push' || github.event_name == 'release'}}
+#            -Psign-app=${{github.event_name == 'push' || github.event_name == 'release'}}
 
       # On MacOS, we now submit the app for "notarization", where Apple will scan the app for
       # malware and other issues.  This step can take a few minutes or more; the action will wait
@@ -115,3 +115,18 @@ jobs:
             app/pkg/build/jpackage/*.dmg
             app/pkg/build/jpackage/*.pkg
             app/pkg/build/jpackage/*.deb
+
+      - name: Zip Mac OS installers
+        if: matrix.os == 'macos-latest' && (github.event_name == 'prerelease' || github.event_name == 'release')
+        run: zip Installer-MacOS.zip "app/pkg/build/jpackage/GTFS Validator.pkg" "app/pkg/build/jpackage/GTFS Validator.dmg"
+
+      - name: Publish Mac OS installers
+        if: matrix.os == 'macos-latest' && (github.event_name == 'prerelease' || github.event_name == 'release')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./Installer-MacOS.zip
+          asset_name: Installer-MacOS.zip
+          asset_content_type: application/zip
