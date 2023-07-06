@@ -25,6 +25,7 @@ jobs:
     name: Build and upload packaged app
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ macos-latest, windows-latest, ubuntu-latest ]
     steps:
@@ -116,9 +117,12 @@ jobs:
             app/pkg/build/jpackage/*.pkg
             app/pkg/build/jpackage/*.deb
 
-      - name: Zip Mac OS installers
-        if: matrix.os == 'macos-latest' && (github.event_name == 'prerelease' || github.event_name == 'release')
-        run: zip Installer-MacOS.zip "app/pkg/build/jpackage/GTFS Validator.pkg" "app/pkg/build/jpackage/GTFS Validator.dmg"
+      - name: List files
+        run: ls -lR app/pkg/build/jpackage/
+
+#      - name: Zip Mac OS installers
+#        if: matrix.os == 'macos-latest' && (github.event_name == 'prerelease' || github.event_name == 'release')
+#        run: zip Installer-MacOS.zip "app/pkg/build/jpackage/GTFS Validator.pkg" "app/pkg/build/jpackage/GTFS Validator.dmg"
 
       - name: Publish Mac OS installers
         if: matrix.os == 'macos-latest' && (github.event_name == 'prerelease' || github.event_name == 'release')
@@ -127,6 +131,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./Installer-MacOS.zip
-          asset_name: Installer-MacOS.zip
-          asset_content_type: application/zip
+          asset_path: ./app/pkg/build/jpackage/GTFS\ Validator.pkg
+          asset_name: GTFS\ Validator.pkg
+          asset_content_type: application/octet-stream
