@@ -146,8 +146,6 @@ jobs:
             const { repo: { owner, repo }, sha } = context;
             console.log({ owner, repo, sha });
 
-            console.log('created release', { release });
-
             for (let file of await fs.readdir('.')) {
               // do whatever filtering you want here, I'm just uploading all the files
               console.log(file);
