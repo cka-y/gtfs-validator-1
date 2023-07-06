@@ -124,13 +124,40 @@ jobs:
 #        if: matrix.os == 'macos-latest' && (github.event_name == 'prerelease' || github.event_name == 'release')
 #        run: zip Installer-MacOS.zip "app/pkg/build/jpackage/GTFS Validator.pkg" "app/pkg/build/jpackage/GTFS Validator.dmg"
 
-      - name: Publish Mac OS installers
-        if: matrix.os == 'macos-latest' && (github.event_name == 'prerelease' || github.event_name == 'release')
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Publish Mac OS installers
+#        if: matrix.os == 'macos-latest' && (github.event_name == 'prerelease' || github.event_name == 'release')
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          upload_url: ${{ github.event.release.upload_url }}
+#          asset_path: ./app/pkg/build/jpackage/GTFS\ Validator.pkg
+#          asset_name: GTFS\ Validator.pkg
+#          asset_content_type: application/octet-stream
+
+      - name: Publish artifacts - Test
+        uses: actions/github-script@v2
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./app/pkg/build/jpackage/GTFS\ Validator.pkg
-          asset_name: GTFS\ Validator.pkg
-          asset_content_type: application/octet-stream
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            console.log(context);
+            const fs = require('fs').promises;
+
+            const { repo: { owner, repo }, sha } = context;
+            console.log({ owner, repo, sha });
+
+            console.log('created release', { release });
+
+            for (let file of await fs.readdir('.')) {
+              // do whatever filtering you want here, I'm just uploading all the files
+              console.log(file);
+              continue;
+              console.log('uploading', file);
+
+              await github.repos.uploadReleaseAsset({
+                owner, repo,
+                release_id: release.data.id,
+                name: file,
+                data: await fs.readFile(`./${file}`)
+              });            
+            }
