@@ -136,26 +136,29 @@ jobs:
 #          asset_content_type: application/octet-stream
 
       - name: Publish artifacts - Test
+        if: github.event_name == 'prerelease' || github.event_name == 'release'
         uses: actions/github-script@v2
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             console.log(context);
+            console.log(`The release ID is ${context.event.release.id}`);
             const fs = require('fs').promises;
 
             const { repo: { owner, repo }, sha } = context;
             console.log({ owner, repo, sha });
 
-            for (let file of await fs.readdir('.')) {
-              // do whatever filtering you want here, I'm just uploading all the files
-              console.log(file);
-              continue;
+            for (let file of await fs.readdir('./app/pkg/build/jpackage')) {
+              const extension = file.split('.').pop()
+              if (extension != "msi" && extension != "dmg" && extension != "pkg" && extension != "deb")
+                continue;
+              
               console.log('uploading', file);
 
               await github.repos.uploadReleaseAsset({
                 owner, repo,
-                release_id: release.data.id,
-                name: file,
+                release_id: context.event.release.id,
+                name: "GTFS Validator." + extension,
                 data: await fs.readFile(`./${file}`)
               });            
             }
