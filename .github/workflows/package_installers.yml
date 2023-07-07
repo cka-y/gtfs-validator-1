@@ -117,8 +117,8 @@ jobs:
             app/pkg/build/jpackage/*.pkg
             app/pkg/build/jpackage/*.deb
 
-      - name: List files
-        run: ls -lR app/pkg/build/jpackage/
+#      - name: List files
+#        run: ls -lR app/pkg/build/jpackage/
 
 #      - name: Zip Mac OS installers
 #        if: matrix.os == 'macos-latest' && (github.event_name == 'prerelease' || github.event_name == 'release')
@@ -141,9 +141,7 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            console.log(context);
-            console.log(context.payload);
-            console.log(`The release ID is ${context.payload.release.id}`);
+            console.log(`Uploading asset to release ID ${context.payload.release.id}`);
             const fs = require('fs').promises;
 
             const { repo: { owner, repo }, sha } = context;
@@ -160,6 +158,6 @@ jobs:
                 owner, repo,
                 release_id: context.payload.release.id,
                 name: "GTFS Validator." + extension,
-                data: await fs.readFile(`./${file}`)
+                data: await fs.readFile(`./app/pkg/build/jpackage/${file}`)
               });            
             }
