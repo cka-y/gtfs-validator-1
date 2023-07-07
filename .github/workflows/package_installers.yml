@@ -117,30 +117,13 @@ jobs:
             app/pkg/build/jpackage/*.pkg
             app/pkg/build/jpackage/*.deb
 
-#      - name: List files
-#        run: ls -lR app/pkg/build/jpackage/
-
-#      - name: Zip Mac OS installers
-#        if: matrix.os == 'macos-latest' && (github.event_name == 'prerelease' || github.event_name == 'release')
-#        run: zip Installer-MacOS.zip "app/pkg/build/jpackage/GTFS Validator.pkg" "app/pkg/build/jpackage/GTFS Validator.dmg"
-
-#      - name: Publish Mac OS installers
-#        if: matrix.os == 'macos-latest' && (github.event_name == 'prerelease' || github.event_name == 'release')
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ github.event.release.upload_url }}
-#          asset_path: ./app/pkg/build/jpackage/GTFS\ Validator.pkg
-#          asset_name: GTFS\ Validator.pkg
-#          asset_content_type: application/octet-stream
-
-      - name: Publish artifacts - Test
+      - name: "Upload assets to release"
         if: github.event_name == 'prerelease' || github.event_name == 'release'
         uses: actions/github-script@v2
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            console.log(`Running on OS ${process.env.OS_NAME}`);
             console.log(`Uploading asset to release ID ${context.payload.release.id}`);
             const fs = require('fs').promises;
 
@@ -157,7 +140,7 @@ jobs:
               await github.repos.uploadReleaseAsset({
                 owner, repo,
                 release_id: context.payload.release.id,
-                name: "GTFS Validator." + extension,
+                name: "GTFS\ Validator." + extension,
                 data: await fs.readFile(`./app/pkg/build/jpackage/${file}`)
               });            
             }
