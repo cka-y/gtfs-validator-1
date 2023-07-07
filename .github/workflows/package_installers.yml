@@ -127,10 +127,11 @@ jobs:
           script: |
             console.log(`Running on OS ${process.env.OS_NAME}`);
             console.log(`Uploading asset to release ID ${context.payload.release.id}`);
+            
+            const os = process.env.OS_NAME.split('-')[0]
             const fs = require('fs').promises;
 
             const { repo: { owner, repo }, sha } = context;
-            console.log({ owner, repo, sha });
 
             for (let file of await fs.readdir('./app/pkg/build/jpackage')) {
               const extension = file.split('.').pop()
@@ -142,7 +143,7 @@ jobs:
               await github.repos.uploadReleaseAsset({
                 owner, repo,
                 release_id: context.payload.release.id,
-                name: "GTFS\ Validator." + extension,
+                name: `Installer ${os}.${extension}` + extension,
                 data: await fs.readFile(`./app/pkg/build/jpackage/${file}`)
               });            
             }
