@@ -143,7 +143,7 @@ jobs:
           script: |
             console.log(context);
             console.log(context.payload);
-            console.log(`The release ID is ${context.event.release.id}`);
+            console.log(`The release ID is ${context.payload.release.id}`);
             const fs = require('fs').promises;
 
             const { repo: { owner, repo }, sha } = context;
@@ -158,7 +158,7 @@ jobs:
 
               await github.repos.uploadReleaseAsset({
                 owner, repo,
-                release_id: context.release.id,
+                release_id: context.payload.release.id,
                 name: "GTFS Validator." + extension,
                 data: await fs.readFile(`./${file}`)
               });            
