@@ -130,7 +130,6 @@ jobs:
             
             const os = process.env.OS_NAME.split('-')[0]
             const fs = require('fs').promises;
-
             const { repo: { owner, repo }, sha } = context;
 
             for (let file of await fs.readdir('./app/pkg/build/jpackage')) {
@@ -138,12 +137,12 @@ jobs:
               if (extension != "msi" && extension != "dmg" && extension != "pkg" && extension != "deb")
                 continue;
               
-              console.log('uploading', file);
+              console.log('Uploading', file);
 
               await github.repos.uploadReleaseAsset({
                 owner, repo,
                 release_id: context.payload.release.id,
-                name: `Installer ${os}.${extension}` + extension,
+                name: `Installer ${os}.${extension}`,
                 data: await fs.readFile(`./app/pkg/build/jpackage/${file}`)
               });            
             }
