@@ -119,6 +119,8 @@ jobs:
 
       - name: "Upload assets to release"
         if: github.event_name == 'prerelease' || github.event_name == 'release'
+        env:
+          OS_NAME: '${{ matrix.os }}'
         uses: actions/github-script@v2
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
