@@ -56,7 +56,12 @@ jobs:
           name: rules-1.json
           path: web/client/static/rules.json
 
-#      TODO download uploaded rules.json
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Validate download
+        run: ls -la *.json
+
       - name: Run script
         run: python3 scripts/notice-migration-generator/notice_migration_generator.py -r ${{ github.event.release.tag_name }}
 
@@ -64,3 +69,7 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           base: master
+          commit-message: "docs: Automatic update of NOTICE_MIGRATION.md"
+          title: "docs: Automatic update of NOTICE_MIGRATION.md"
+          delete-branch: true
+          add-paths: docs/*.md
