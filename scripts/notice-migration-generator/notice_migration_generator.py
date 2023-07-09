@@ -2,15 +2,13 @@ import pandas as pd
 import argparse
 import jsondiff
 import json
-from zipfile import ZipFile
 import numpy as np
 from utils.utils import get_migration_file
 
 
 def read_rule_file(filename):
-    with ZipFile(filename) as directory:
-        with directory.open("rules.json") as f:
-            rules = json.load(f)
+    with open(filename + "/rules.json", 'r') as f:
+        rules = json.load(f)
     return {key: rules[key]["severityLevel"] for key in rules}
 
 
