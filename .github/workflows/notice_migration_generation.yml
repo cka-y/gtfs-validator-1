@@ -1,4 +1,4 @@
-name: Generate NOTICE_MIGRATION.md
+name: Update NOTICE_MIGRATION.md
 
 on:
   release:
@@ -63,7 +63,10 @@ jobs:
         run: ls -la *.json
 
       - name: Run update script
-        run: python3 scripts/notice-migration-generator/notice_migration_generator.py -r ${{ github.event.release.tag_name }}
+        run: |
+          echo "CHANGED_NOTICES<<EOF" >> $GITHUB_ENV
+          python3 scripts/notice-migration-generator/notice_migration_generator.py -r ${{ github.event.release.tag_name }} >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
@@ -72,4 +75,5 @@ jobs:
           commit-message: "docs: Automatic update of NOTICE_MIGRATION.md"
           title: "docs: Automatic update of NOTICE_MIGRATION.md"
           delete-branch: true
+          body: ${{ env.CHANGED_NOTICES }}
           add-paths: docs/*.md
