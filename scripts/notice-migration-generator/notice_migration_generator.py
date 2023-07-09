@@ -2,13 +2,15 @@ import pandas as pd
 import argparse
 import jsondiff
 import json
+from zipfile import ZipFile
 import numpy as np
 from utils.utils import get_migration_file
 
 
 def read_rule_file(filename):
-    with open(filename, 'r') as f:
-        rules = json.load(f)
+    with ZipFile(filename) as directory:
+        with directory.open("rules.json") as f:
+            rules = json.load(f)
     return {key: rules[key]["severityLevel"] for key in rules}
 
 
@@ -26,8 +28,8 @@ if __name__ == '__main__':
     migration_table.insert(0, version, migration_table[previous_version])
 
     # Read rules.json
-    rules_1 = read_rule_file(f"rules-{version.lower()}.json")
-    rules_2 = read_rule_file(f"rules-{previous_version.lower()}.json")
+    rules_1 = read_rule_file(f"rules-{version.lower()}.zip")
+    rules_2 = read_rule_file(f"rules-{previous_version.lower()}.zip")
 
     # Added Notices
     diff = jsondiff.diff(rules_1, rules_2)
