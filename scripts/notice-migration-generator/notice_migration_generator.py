@@ -28,8 +28,8 @@ if __name__ == '__main__':
     migration_table.insert(0, version, migration_table[previous_version])
 
     # Read rules.json
-    rules_1 = read_rule_file(f"rules-{version.lower()}.zip")
-    rules_2 = read_rule_file(f"rules-{previous_version.lower()}.zip")
+    rules_1 = read_rule_file(f"rules-{version.lower()}")
+    rules_2 = read_rule_file(f"rules-{previous_version.lower()}")
 
     # Added Notices
     diff = jsondiff.diff(rules_1, rules_2)
