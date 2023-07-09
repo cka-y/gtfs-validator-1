@@ -17,7 +17,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--release', help="Release Version", required=True)
     args = parser.parse_args()
     version = args.release.upper()
-    output = f"**Automated Update of NOTICE_MIGRATION.md for release {version}**\n"
+    output = f"# Automated Update of NOTICE_MIGRATION.md for release {version}\n"
 
     migration_table: pd.DataFrame = get_migration_file()
     migration_table.fillna('', inplace=True)
@@ -39,9 +39,10 @@ if __name__ == '__main__':
             migration_table.loc[i + 1] = [f"{rules_1[new_notice]}-{new_notice}"] \
                                          + ['' for _ in range(len(migration_table.columns) - 1)]
             i += 1
-        output += "*Notices added :* " + ", ".join(new_notices) + "\n"
+        output += "## Notices added : \n" + ", ".join([f"`{new_notice}`" for new_notice in new_notices]) + "\n"
     except KeyError:
-        output += "*No added notices. *\n"
+        output += "*No added notice. *\n"
+    output += "\n"
 
     # Deleted notices
     diff = jsondiff.diff(rules_2, rules_1)
@@ -49,18 +50,19 @@ if __name__ == '__main__':
         deleted_notices = diff[jsondiff.delete]
         for deleted_notice in deleted_notices:
             migration_table.loc[migration_table[migration_table[version].str.endswith(deleted_notice)].index, version] = ''
-        output += "*Notices deleted :* " + ", ".join(deleted_notices) + "\n"
+        output += "## Notices deleted :\n " + ", ".join([f"`{deleted_notice}`" for deleted_notice in deleted_notices]) + "\n"
     except KeyError:
-        output += "*No deleted notices. *\n"
+        output += "*No deleted notice. *\n"
+    output += "\n"
 
     # Change in severity
-    output += "*Notices change in severity level :* \n"
+    output += "## Notices change in severity level : \n"
     for notice, severity in diff.items():
         if notice in new_notices or notice == jsondiff.delete:
             continue
         migration_table.loc[migration_table[migration_table[version].str.endswith(notice)].index, version] = \
             f"{severity}-{notice}"
-        output += f"- {notice} changed from {rules_2[notice]} to {severity} \n"
+        output += f"- `{notice}` changed from `{rules_2[notice]}` to `{severity}` \n"
     if not len(diff):
         output += "None"
 
