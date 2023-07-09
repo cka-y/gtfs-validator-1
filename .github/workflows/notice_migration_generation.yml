@@ -60,7 +60,7 @@ jobs:
         uses: actions/download-artifact@v3
 
       - name: Validate download
-        run: ls -la *.json
+        run: ls -la rules*
 
       - name: Run update script
         run: |
