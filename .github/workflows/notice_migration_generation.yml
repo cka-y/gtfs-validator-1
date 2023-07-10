@@ -68,12 +68,12 @@ jobs:
           python3 scripts/notice-migration-generator/notice_migration_generator.py -r ${{ github.event.release.tag_name }} >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Create Pull Request
+      - name: Create PR
         uses: peter-evans/create-pull-request@v5
         with:
           base: master
-          commit-message: "docs: Automatic update of NOTICE_MIGRATION.md"
-          title: "docs: Automatic update of NOTICE_MIGRATION.md"
+          commit-message: "docs: Automated update of NOTICE_MIGRATION.md"
+          title: "docs: Automated update of NOTICE_MIGRATION.md"
           delete-branch: true
           body: ${{ env.CHANGED_NOTICES }}
           add-paths: docs/*.md

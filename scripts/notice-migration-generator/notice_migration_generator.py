@@ -12,12 +12,20 @@ def read_rule_file(filename):
     return {key: rules[key]["severityLevel"] for key in rules}
 
 
+def get_severity_symbol(severity):
+    if severity == "WARNING":
+        return '🟡'
+    if severity == "ERROR":
+        return '🔴'
+    return '⚪'
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Automatic generation of NOTICE_MIGRATION.md")
     parser.add_argument('-r', '--release', help="Release Version", required=True)
     args = parser.parse_args()
     version = args.release.upper()
-    output = f"# Automated Update of NOTICE_MIGRATION.md for release {version}\n"
+    output = f"# Automated update of NOTICE_MIGRATION.md for release {version.lower()}\n"
 
     migration_table: pd.DataFrame = get_migration_file()
     migration_table.fillna('', inplace=True)
@@ -39,7 +47,13 @@ if __name__ == '__main__':
             migration_table.loc[i + 1] = [f"{rules_1[new_notice]}-{new_notice}"] \
                                          + ['' for _ in range(len(migration_table.columns) - 1)]
             i += 1
-        output += "## Notices added : \n" + ", ".join([f"`{new_notice}`" for new_notice in new_notices]) + "\n"
+        output += "## Notices added : \n" \
+                  + "\n ".join(
+                        [
+                            f"- `{new_notice}`: {get_severity_symbol(rules_1[new_notice])} {rules_1[new_notice]}"
+                            for new_notice in new_notices
+                        ]
+                    ) + "\n"
     except KeyError:
         output += "*No added notice. *\n"
     output += "\n"
@@ -49,8 +63,14 @@ if __name__ == '__main__':
     try:
         deleted_notices = diff[jsondiff.delete]
         for deleted_notice in deleted_notices:
-            migration_table.loc[migration_table[migration_table[version].str.endswith(deleted_notice)].index, version] = ''
-        output += "## Notices deleted :\n " + ", ".join([f"`{deleted_notice}`" for deleted_notice in deleted_notices]) + "\n"
+            migration_table.loc[
+                migration_table[migration_table[version].str.endswith(deleted_notice)].index, version] = ''
+        output += "## Notices deleted :\n " \
+                  + ", ".join(
+                        [
+                            f"`{deleted_notice}`" for deleted_notice in deleted_notices
+                        ]
+                    ) + "\n"
     except KeyError:
         output += "*No deleted notice. *\n"
     output += "\n"
@@ -62,7 +82,8 @@ if __name__ == '__main__':
             continue
         migration_table.loc[migration_table[migration_table[version].str.endswith(notice)].index, version] = \
             f"{severity}-{notice}"
-        output += f"- `{notice}` changed from `{rules_2[notice]}` to `{severity}` \n"
+        output += f"- `{notice}` changed from {get_severity_symbol(rules_2[notice])} {rules_2[notice]} " \
+                  f"to {get_severity_symbol(severity)} {severity} \n"
     if not len(diff):
         output += "None"
 
@@ -75,9 +96,9 @@ if __name__ == '__main__':
         file_content = f.read()
 
     new_file_content = "\n".join([line for line in file_content.split('\n') if not line.startswith('|')]) \
-                       + "\n" + migration_table\
-                           .sort_values(by=[version, previous_version], na_position='last')\
-                           .fillna('')\
+                       + "\n" + migration_table \
+                           .sort_values(by=[version, previous_version], na_position='last') \
+                           .fillna('') \
                            .to_markdown(index=False)
 
     with open(notice_migration_file, 'w') as f:
