@@ -117,21 +117,29 @@ jobs:
             app/pkg/build/jpackage/*.pkg
             app/pkg/build/jpackage/*.deb
 
-      - name: "Set up Python"
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          pip3 install -r scripts/asset-publisher/requirements.txt
-
-      - name: "Upload assets to release"
+#      - name: "Set up Python"
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: '3.11'
+#
+#      - name: Install dependencies
+#        run: |
+#          pip3 install -r scripts/asset-publisher/requirements.txt
+#
+#      - name: "Upload assets to release"
+#        if: github.event_name == 'prerelease' || github.event_name == 'release'
+#        env:
+#          OS_NAME: '${{ matrix.os }}'
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          RELEASE_ID: ${{ github.event.release.id }}
+#          OWNER: ${{ github.repository_owner }}
+#          REPO: ${{ github.event.repository.name }}
+#        run: python3 scripts/asset-publisher/publish_assets.py
+      - name: Upload assets to release
+        uses: xresloader/upload-to-github-release@v1
         if: github.event_name == 'prerelease' || github.event_name == 'release'
         env:
-          OS_NAME: '${{ matrix.os }}'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_ID: ${{ github.event.release.id }}
-          OWNER: ${{ github.repository_owner }}
-          REPO: ${{ github.event.repository.name }}
-        run: python3 scripts/asset-publisher/publish_assets.py
+        with:
+          file: "app/pkg/build/jpackage/*"
+          release_id: ${{ github.event.release.id }}
