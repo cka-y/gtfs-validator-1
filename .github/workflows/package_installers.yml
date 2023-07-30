@@ -117,29 +117,18 @@ jobs:
             app/pkg/build/jpackage/*.pkg
             app/pkg/build/jpackage/*.deb
 
-#      - name: "Set up Python"
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: '3.11'
-#
-#      - name: Install dependencies
-#        run: |
-#          pip3 install -r scripts/asset-publisher/requirements.txt
-#
-#      - name: "Upload assets to release"
-#        if: github.event_name == 'prerelease' || github.event_name == 'release'
-#        env:
-#          OS_NAME: '${{ matrix.os }}'
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          RELEASE_ID: ${{ github.event.release.id }}
-#          OWNER: ${{ github.repository_owner }}
-#          REPO: ${{ github.event.repository.name }}
-#        run: python3 scripts/asset-publisher/publish_assets.py
-      - name: Upload assets to release
-        uses: xresloader/upload-to-github-release@v1
+      - name: Zip installers
         if: github.event_name == 'prerelease' || github.event_name == 'release'
+        run: |
+          zip -r "Installers.${{ matrix.os }}.zip" app/pkg/build/jpackage/*
+
+      - name: Upload zipped installers
+        if: github.event_name == 'prerelease' || github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "app/pkg/build/jpackage/*"
-          release_id: ${{ github.event.release.id }}
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./Installers.${{ matrix.os }}.zip
+          asset_name: Installers.${{ matrix.os }}.zip
+          asset_content_type: application/zip
