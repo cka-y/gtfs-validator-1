@@ -119,8 +119,13 @@ jobs:
 
       - name: Zip installers
         if: github.event_name == 'prerelease' || github.event_name == 'release'
+        shell: bash
         run: |
-          zip -r "Installers.${{ matrix.os }}.zip" app/pkg/build/jpackage/*
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            powershell Compress-Archive -Path app/pkg/build/jpackage/* -DestinationPath Installers.${{ matrix.os }}.zip
+          else
+            zip -r Installers.${{ matrix.os }}.zip app/pkg/build/jpackage/*
+          fi
 
       - name: Upload zipped installers
         if: github.event_name == 'prerelease' || github.event_name == 'release'
