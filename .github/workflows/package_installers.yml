@@ -116,24 +116,15 @@ jobs:
             app/pkg/build/jpackage/*.dmg
             app/pkg/build/jpackage/*.pkg
             app/pkg/build/jpackage/*.deb
-      - name: "Upload Installer"
-        uses: actions/upload-artifact@v3
-        with:
-          name: Installer - ${{matrix.os}}
-          path: |
-            app/pkg/build/jpackage/*.msi
-            app/pkg/build/jpackage/*.dmg
-            app/pkg/build/jpackage/*.pkg
-            app/pkg/build/jpackage/*.deb
 
       - name: "Set up Python"
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
-          pip install -r scripts/asset-publisher/publish_assets.py
+          pip3 install -r scripts/asset-publisher/publish_assets.py
 
       - name: "Upload assets to release"
         if: github.event_name == 'prerelease' || github.event_name == 'release'
@@ -143,4 +134,4 @@ jobs:
           RELEASE_ID: ${{ github.event.release.id }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
-        run: python .github/scripts/upload_assets.py
+        run: python3 .github/scripts/upload_assets.py
