@@ -133,7 +133,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r scripts/assets-publisher/requirements.txt
+          pip install -r scripts/asset-publisher/requirements.txt
 
       - name: "Upload assets to release"
         if: github.event_name == 'prerelease' || github.event_name == 'release'
