@@ -124,7 +124,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip3 install -r scripts/asset-publisher/publish_assets.py
+          pip3 install -r scripts/asset-publisher/requirements.txt
 
       - name: "Upload assets to release"
         if: github.event_name == 'prerelease' || github.event_name == 'release'
@@ -134,4 +134,4 @@ jobs:
           RELEASE_ID: ${{ github.event.release.id }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
-        run: python3 .github/scripts/upload_assets.py
+        run: python3 scripts/asset-publisher/publish_assets.py
